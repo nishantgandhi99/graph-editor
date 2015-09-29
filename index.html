@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Giraph-Tester</title>
+    <!-- Bootstrap Core CSS -->
+    <link  href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="app.css">
+    <script src="node.js"></script>
+
+    <!-- Custom CSS -->
+    <style>
+    body {
+        padding-top: 70px;
+    }
+    </style>
+</head>
+
+
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                </button>
+                <a class="navbar-brand" href="#">Giraph Tester: Job Launcher Configuration</a>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+
+
+    <!-- Page Content -->
+    <div class="container">
+
+        <div class="row">
+          <div class="col-sm-6">
+          <h4> Edit Mode: <button type="button" id="editorButton" class="btn btn-warning" onClick=editModeButton()>On</button>
+            Graph Type: <button type="button" id="graphTypeButton" class="btn btn-warning" onClick=changeGraphTypeButton()>Undirected</button>
+            NodeCount:
+            <span class="label label-default" id="NodeCount"></span>
+          </h4>
+            <br/>
+          </div>
+          <div class="col-sm-6">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-6"  id="mainContainer">
+          </div>
+          <div class="col-sm-3">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">Adjacency List:</h3>
+              </div>
+              <div class="panel-body" id="AdjList">
+
+              </div>
+              <div class="panel-body">
+                <form role="form" method="post" action="getFile" target="_blank">
+                  <h4>Generate File:<button type="submit" id="generateFileAdjListButton" value="hi" name="btnDownload" class="btn btn-warning" onClick="generateFile()">Click</button></h4>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">JSON List:</h3>
+              </div>
+              <div class="panel-body" id="JSONList">
+                Panel content
+              </div>
+              <div class="panel-body">
+              <form role="form" method="post" action="getFile" target="_blank">
+                <h4>Generate File:<button type="submit" id="generateFileJSONListButton" value="hi" name="btnDownload" class="btn btn-warning" onClick="generateFile()">Click</button></h4>
+              </form>
+            </div>
+            </div>
+          </div>
+        </div>
+      <div class="row">
+        <form role="form">
+          <div class="form-group">
+            <div class="col-xs-2">
+              <input class="form-control bfh-number" id="NodeNum" type="number" placeholder="Enter Node Count:">
+            </div>
+            <div class="col-xs-2">
+              <select class="form-control" id="GraphList">
+                <option>Clique</option>
+                <option>Star</option>
+                <option>Cycle</option>
+              </select>
+
+          </div>
+          <div class="col-xs-2">
+          <button class="btn btn-default" type="button" onClick=generateGraph()>Generate</button>
+        </div>
+          </div>
+        </form>
+      </div>
+      <br/><br/>
+
+        <div class="row">
+          <div class="col-sm-8">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+            <strong>Instructions:</strong>
+          </div>
+          <div class="panel-body">
+            <p>Click on Editor to add Node. Select source node and drage it to destination node to add Edge.</p>
+            <p>To delete node or edge, select them and press DELETE or BACKSPACE.</p>
+            <p>To change direction of Edge, select Edge and press R or L to change direction.</p>
+            <p>To change Edge to undirected, select Edge and  press B</p>
+          </div>
+          </div>
+        </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <strong>Giraph Runner Eclipse Configuration Code:</strong>
+              </div>
+              <div class="panel-body">
+
+                <pre class="prettyprint">
+import org.apache.commons.io.FileUtils;
+import org.apache.giraph.conf.GiraphConfiguration;
+import org.apache.giraph.examples.ConnectedComponentsComputation;
+import org.apache.giraph.io.formats.GiraphFileInputFormat;
+import org.apache.giraph.io.formats.IdWithValueTextOutputFormat;
+import org.apache.giraph.io.formats.IntNullTextEdgeInputFormat;
+import org.apache.giraph.job.GiraphJob;
+import org.apache.giraph.partition.ByteArrayPartition;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.mapred.jobcontrol.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
+
+public class <b>MyGiraphApplicationRunner</b> implements Tool {
+    private Configuration conf;
+    private static String inputPath;
+    private static String outputPath;
+
+    public String getInputPath() {
+        return inputPath;
+    }
+    public void setInputPath(String inputPath) {
+        this.inputPath = inputPath;
+    }
+    public String getOutputPath() {
+        return outputPath;
+    }
+    public void setOutputPath(String outputPath) {
+        this.outputPath = outputPath;
+    }
+    @Override
+    public Configuration getConf() {
+        return conf;
+    }
+    @Override
+    public void setConf(Configuration conf) {
+        this.conf=conf;
+    }
+
+    @SuppressWarnings("static-access")
+    @Override
+    public int run(String[] args) throws Exception {
+    <b>/*Set Your Input Path Here*/</b>
+        setInputPath(<b>"MyInputFilePath"</b>);
+
+        GiraphConfiguration giraphConf=new GiraphConfiguration(getConf());
+
+        <b>/*Set Your Computation Class Here*/</b>
+        giraphConf.setComputationClass(<b>MyComputation.class</b>);
+
+        giraphConf.setVertexInputFormatClass(LongLongAdjListFileInputFormat.class);
+        giraphConf.setVertexOutputFormatClass(IdWithValueTextOutputFormat.class);
+        GiraphFileInputFormat.addVertexInputPath(giraphConf, new Path(getInputPath()));
+        giraphConf.setWorkerConfiguration(0, 1, 100.0f);
+        giraphConf.SPLIT_MASTER_WORKER.set(giraphConf, false);
+        giraphConf.setLocalTestMode(true);
+        giraphConf.setMaxNumberOfSupersteps(10000);
+        giraphConf.USE_OUT_OF_CORE_GRAPH.set(giraphConf, true);
+        GiraphJob job =new GiraphJob(giraphConf,getClass().getName());
+
+        <b>/*Set Your Output Path Here*/</b>
+        setOutputPath(<b>"MyOutputPath"</b>);
+
+        FileOutputFormat.setOutputPath(job.getInternalJob(), new Path(getOutputPath()));
+        File directory=new File(getOutputPath());
+        FileUtils.deleteDirectory(directory);
+        job.run(true);
+        return 1;
+    }
+
+    public static void main(String args[]) throws Exception {
+       <b> /*Run your program with ToolRunner*/</b>
+        ToolRunner.run(new <b>MyGiraphApplicationRunner()</b>,args);
+    }
+}
+              </pre>
+              </div>
+          </div>
+        </div>
+    </div>
+
+   
+    <!-- /.container -->
+    <div class="navbar navbar-default">
+      <div class="container">
+        <span class="navbar-text">
+          Project By: Nishant M Gandhi, IIT Patna <br/>
+	  Inspired By: Graft-The Giraph Debugger, Stanford University
+        </span>
+        </div>
+    </div>
+    <!-- jQuery Version 1.11.2 -->
+    <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="app.js"></script>
+    <script src="Utils.js"></script>
+    <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+</body>
+
+</html>
